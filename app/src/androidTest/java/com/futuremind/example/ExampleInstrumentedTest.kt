@@ -1,4 +1,4 @@
-package com.futuremind.sharedpreferencesdelegates
+package com.futuremind.example
 
 import android.support.test.InstrumentationRegistry
 import android.support.test.runner.AndroidJUnit4

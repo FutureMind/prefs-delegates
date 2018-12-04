@@ -1,4 +1,4 @@
-package com.futuremind.sharedpreferencesdelegates
+package com.futuremind.example
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle

@@ -1,4 +1,4 @@
-package com.futuremind.sharedpreferencesdelegates
+package com.futuremind.example
 
 import org.junit.Test
 

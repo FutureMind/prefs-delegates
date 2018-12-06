@@ -1,1 +1,1 @@
-include ':app', ':preferencesdelegates'
+include ':example', ':preferencesdelegates'

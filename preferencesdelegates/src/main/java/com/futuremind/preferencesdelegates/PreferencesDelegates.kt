@@ -4,67 +4,64 @@ import android.content.SharedPreferences
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
-fun <T> SharedPreferences.boolean(key: String, onSetValue: (value: Boolean) -> Unit, defaultValue: Boolean = false): ReadWriteProperty<Any, T> {
-    return object : ReadWriteProperty<Any, T> {
-        override fun getValue(thisRef: Any, property: KProperty<*>): T {
-            return getBoolean(key, defaultValue) as T
+fun SharedPreferences.boolean(key: String, defaultValue: Boolean = false): ReadWriteProperty<Any, Boolean> {
+    return object : ReadWriteProperty<Any, Boolean> {
+        override fun getValue(thisRef: Any, property: KProperty<*>): Boolean {
+            return getBoolean(key, defaultValue)
         }
 
-        override fun setValue(thisRef: Any, property: KProperty<*>, value: T) {
-            edit().putBoolean(key, value as Boolean).apply()
-            onSetValue(value)
-        }
-    }
-}
-
-fun <T> SharedPreferences.string(key: String, onSetValue: (value: String) -> Unit, defaultValue: String = ""): ReadWriteProperty<Any, T> {
-    return object : ReadWriteProperty<Any, T> {
-        override fun getValue(thisRef: Any, property: KProperty<*>): T {
-            return (getString(key, defaultValue) ?: defaultValue) as T
-        }
-
-        override fun setValue(thisRef: Any, property: KProperty<*>, value: T) {
-            edit().putString(key, value as String).apply()
-            onSetValue(value)
+        override fun setValue(thisRef: Any, property: KProperty<*>, value: Boolean) {
+            edit().putBoolean(key, value).apply()
         }
     }
 }
 
-fun <T> SharedPreferences.float(key: String, onSetValue: (value: Float) -> Unit, defaultValue: Float = -1.0f): ReadWriteProperty<Any, T> {
-    return object : ReadWriteProperty<Any, T> {
-        override fun getValue(thisRef: Any, property: KProperty<*>): T {
-            return getFloat(key, defaultValue) as T
+fun SharedPreferences.string(key: String, defaultValue: String = ""): ReadWriteProperty<Any, String> {
+    return object : ReadWriteProperty<Any, String> {
+        override fun getValue(thisRef: Any, property: KProperty<*>): String {
+            return (getString(key, defaultValue) ?: defaultValue)
         }
 
-        override fun setValue(thisRef: Any, property: KProperty<*>, value: T) {
-            edit().putFloat(key, value as Float).apply()
-            onSetValue(value)
-        }
-    }
-}
-
-fun <T> SharedPreferences.integer(key: String, onSetValue: (value: Int) -> Unit, defaultValue: Int = -1): ReadWriteProperty<Any, T> {
-    return object : ReadWriteProperty<Any, T> {
-        override fun getValue(thisRef: Any, property: KProperty<*>): T {
-            return getInt(key, defaultValue) as T
-        }
-
-        override fun setValue(thisRef: Any, property: KProperty<*>, value: T) {
-            edit().putInt(key, value as Int).apply()
-            onSetValue(value)
+        override fun setValue(thisRef: Any, property: KProperty<*>, value: String) {
+            edit().putString(key, value).apply()
         }
     }
 }
 
-fun <T> SharedPreferences.long(key: String, onSetValue: (value: Long) -> Unit, defaultValue: Long = -1L): ReadWriteProperty<Any, T> {
-    return object : ReadWriteProperty<Any, T> {
-        override fun getValue(thisRef: Any, property: KProperty<*>): T {
-            return getLong(key, defaultValue) as T
+fun SharedPreferences.float(key: String, defaultValue: Float = -1.0f): ReadWriteProperty<Any, Float> {
+    return object : ReadWriteProperty<Any, Float> {
+        override fun getValue(thisRef: Any, property: KProperty<*>): Float {
+            return getFloat(key, defaultValue)
         }
 
-        override fun setValue(thisRef: Any, property: KProperty<*>, value: T) {
-            edit().putLong(key, value as Long).apply()
-            onSetValue(value)
+        override fun setValue(thisRef: Any, property: KProperty<*>, value: Float) {
+            edit().putFloat(key, value).apply()
+
+        }
+    }
+}
+
+fun SharedPreferences.integer(key: String, defaultValue: Int = -1): ReadWriteProperty<Any, Int> {
+    return object : ReadWriteProperty<Any, Int> {
+        override fun getValue(thisRef: Any, property: KProperty<*>): Int {
+            return getInt(key, defaultValue)
+        }
+
+        override fun setValue(thisRef: Any, property: KProperty<*>, value: Int) {
+            edit().putInt(key, value).apply()
+
+        }
+    }
+}
+
+fun SharedPreferences.long(key: String,defaultValue: Long = -1L): ReadWriteProperty<Any, Long> {
+    return object : ReadWriteProperty<Any, Long> {
+        override fun getValue(thisRef: Any, property: KProperty<*>): Long {
+            return getLong(key, defaultValue)
+        }
+
+        override fun setValue(thisRef: Any, property: KProperty<*>, value: Long) {
+            edit().putLong(key, value).apply()
         }
     }
 }

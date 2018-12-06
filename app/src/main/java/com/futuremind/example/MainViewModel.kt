@@ -5,7 +5,7 @@ import javax.inject.Inject
 
 class MainViewModel @Inject constructor(val testStore: TestStore) : ViewModel() {
     fun saveToken(token: String) {
-        testStore.saveToken.prefsDelegate = token
+        //testStore.prefsObserver.prefsDelegate = token
     }
 
 }

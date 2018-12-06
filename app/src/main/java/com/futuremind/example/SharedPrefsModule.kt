@@ -1,11 +1,11 @@
-package com.futuremind.preferencesdelegates
+package com.futuremind.example
 
 import android.content.Context
 import android.content.SharedPreferences
 import android.preference.PreferenceManager
 import dagger.Module
-import javax.inject.Singleton
 import dagger.Provides
+import javax.inject.Singleton
 
 @Module
 class SharedPrefsModule {

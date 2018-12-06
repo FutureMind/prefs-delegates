@@ -1,16 +1,17 @@
 package com.futuremind.example
 
-import com.futuremind.preferencesdelegates.SharedPrefsModule
 import dagger.BindsInstance
 import dagger.Component
+import dagger.android.AndroidInjectionModule
 import javax.inject.Singleton
 
 @Singleton
 @Component(
         modules = [
+            AndroidInjectionModule::class,
             ViewModelFactoryModule::class,
-            SharedPrefsModule::class,
             ContextModule::class,
+            SharedPrefsModule::class,
             MainActivityBuilder::class
         ]
 )
@@ -26,4 +27,5 @@ interface AppComponent {
     }
 
     fun inject(mainActivity: MainActivity)
+    fun inject(app: App)
 }

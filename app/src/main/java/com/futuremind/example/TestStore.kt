@@ -1,9 +1,8 @@
 package com.futuremind.example
 
 import android.content.SharedPreferences
-import com.futuremind.preferencesdelegates.PrefsObserver
-import com.futuremind.preferencesdelegates.long
-import com.futuremind.preferencesdelegates.valueDelegate
+import com.futuremind.preferencesdelegates.PreferencesObserver
+import com.futuremind.preferencesdelegates.prefsDelegate
 import javax.inject.Inject
 
 class TestStore @Inject constructor(prefs: SharedPreferences) {
@@ -13,10 +12,8 @@ class TestStore @Inject constructor(prefs: SharedPreferences) {
         private const val TOKEN_KEY = "token_key"
     }
 
-    var age by prefs.long(AGE_KEY)
+    var age by prefs.prefsDelegate<Int>(AGE_KEY, -1)
 
-    var token by prefs.valueDelegate<String>(TOKEN_KEY, {}, "")
-
-
+    var token = PreferencesObserver(TOKEN_KEY, prefs, String::class.java, "")
 
 }

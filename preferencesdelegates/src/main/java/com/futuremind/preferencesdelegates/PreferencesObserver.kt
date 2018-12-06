@@ -18,16 +18,16 @@ class PreferencesObserver<T> constructor(
 
     fun observe(): Observable<T> = processor.toObservable().share()
 
-    fun saveAndCommitWithValue(value: T): Single<T> =
+    fun saveAndGetValue(value: T): Single<T> =
             Single.fromCallable { putValue(prefsKey, value) }
                     .map { it.commit() }
                     .doOnSuccess { processor.onNext(value) }
                     .map { value }
 
-    fun saveAndCommit(value: T): Completable = saveAndCommitWithValue(value)
+    fun saveValue(value: T): Completable = saveAndGetValue(value)
             .flatMapCompletable { Completable.complete() }
 
-    fun saveWithoutCommit(value: T): Completable =
+    fun saveValueWithoutCommit(value: T): Completable =
             Single.fromCallable { putValue(prefsKey, value) }
                     .doOnSuccess { processor.onNext(value) }
                     .flatMapCompletable { Completable.complete() }

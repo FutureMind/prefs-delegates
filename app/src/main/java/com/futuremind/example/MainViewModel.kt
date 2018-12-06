@@ -2,7 +2,6 @@ package com.futuremind.example
 
 import android.arch.lifecycle.ViewModel
 import io.reactivex.Observable
-import io.reactivex.Single
 import javax.inject.Inject
 
 class MainViewModel @Inject constructor(private val testStore: TestStore) : ViewModel() {
@@ -11,7 +10,7 @@ class MainViewModel @Inject constructor(private val testStore: TestStore) : View
         testStore.age = age
     }
     fun saveToken(token: String) {
-        testStore.token.saveAndCommit(token).subscribe()
+        testStore.token.saveValue(token).subscribe()
     }
 
     fun observeTokenChange(): Observable<String> = testStore.token.observe()

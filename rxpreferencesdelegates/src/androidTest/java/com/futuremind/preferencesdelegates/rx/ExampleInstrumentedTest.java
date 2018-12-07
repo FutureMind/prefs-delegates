@@ -1,4 +1,4 @@
-package com.futuremind.preferencesdelegates;
+package com.futuremind.preferencesdelegates.rx;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("com.futuremind.preferencesdelegates.test", appContext.getPackageName());
+        assertEquals("com.futuremind.preferencesdelegates.rx.test", appContext.getPackageName());
     }
 }

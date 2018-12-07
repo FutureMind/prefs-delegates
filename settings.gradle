@@ -1,1 +1,1 @@
-include ':example', ':preferencesdelegates'
+include ':example', ':preferencesdelegates', ':rxpreferencesdelegates'

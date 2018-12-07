@@ -6,16 +6,16 @@ import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KFunction2
 import kotlin.reflect.KProperty
 
-fun SharedPreferences.boolean(prefsKey: String, defaultValue: Boolean) =
+fun SharedPreferences.boolean(prefsKey: String, defaultValue: Boolean = false) =
         prefsDelegate(prefsKey, defaultValue, this::getBoolean, Editor::putBoolean)
 
-fun SharedPreferences.long(prefsKey: String, defaultValue: Long) =
+fun SharedPreferences.long(prefsKey: String, defaultValue: Long = 0L) =
         prefsDelegate(prefsKey, defaultValue, this::getLong, Editor::putLong)
 
-fun SharedPreferences.int(prefsKey: String, defaultValue: Int) =
+fun SharedPreferences.int(prefsKey: String, defaultValue: Int = 0) =
         prefsDelegate(prefsKey, defaultValue, this::getInt, Editor::putInt)
 
-fun SharedPreferences.float(prefsKey: String, defaultValue: Float) =
+fun SharedPreferences.float(prefsKey: String, defaultValue: Float = 0f) =
         prefsDelegate(prefsKey, defaultValue, this::getFloat, Editor::putFloat)
 
 fun SharedPreferences.string(prefsKey: String, defaultValue: String? = null) =

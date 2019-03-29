@@ -2,17 +2,28 @@ package com.futuremind.example
 
 import android.content.SharedPreferences
 import com.futuremind.preferencesdelegates.PreferencesObserver
-import com.futuremind.preferencesdelegates.prefsDelegate
+import com.futuremind.preferencesdelegates.enum
+import com.futuremind.preferencesdelegates.int
+import com.futuremind.preferencesdelegates.json
+import com.squareup.moshi.Moshi
 import javax.inject.Inject
 
-class TestStore @Inject constructor(prefs: SharedPreferences) {
+class TestStore @Inject constructor(prefs: SharedPreferences, moshi: Moshi) {
 
     companion object {
         private const val AGE_KEY = "age_key"
         private const val TOKEN_KEY = "token_key"
+        private const val ENUM_KEY = "enum_key"
+        private const val PERSON_KEY = "preson_key"
     }
 
-    var age by prefs.prefsDelegate<Int>(AGE_KEY, -1)
+    enum class SomeEnum { AWESOME, NICE, CRAP }
+
+    var age: Int by prefs.int(AGE_KEY, -1)
+
+    var enum: SomeEnum by prefs.enum<SomeEnum>(ENUM_KEY, SomeEnum.AWESOME)
+
+    var person: Person? by prefs.json<Person?>(PERSON_KEY, null, moshi)
 
     var token = PreferencesObserver(TOKEN_KEY, prefs, String::class.java, "")
 

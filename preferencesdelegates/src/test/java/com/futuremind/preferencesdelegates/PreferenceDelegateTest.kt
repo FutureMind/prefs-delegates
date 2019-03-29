@@ -4,12 +4,14 @@ import android.content.SharedPreferences
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.whenever
+import com.squareup.moshi.Moshi
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.junit.MockitoJUnitRunner
+
 
 @RunWith(MockitoJUnitRunner::class)
 class PreferenceDelegateTest {
@@ -21,7 +23,15 @@ class PreferenceDelegateTest {
         private const val FLOAT = "FLOAT"
         private const val STRING = "STRING"
         private const val STRING_SET = "STRING_SET"
+        private const val ENUM = "ENUM"
+        private const val JSON = "JSON"
+        private val moshi = Moshi.Builder().build()
+        private val jsonAdapter = moshi.adapter(Person::class.java)
     }
+
+    enum class SomeEnum { DEFAULT, NICE, CRAP }
+
+    data class Person(val name: String, val age: Int)
 
     class PrefValuesContainer(prefs: SharedPreferences) {
         var booleanValue by prefs.boolean(BOOLEAN)
@@ -30,6 +40,8 @@ class PreferenceDelegateTest {
         var floatValue by prefs.float(FLOAT)
         var stringValue by prefs.string(STRING)
         var stringSetValue by prefs.stringSet(STRING_SET)
+        var enumValue by prefs.enum<SomeEnum>(ENUM, SomeEnum.DEFAULT)
+        var jsonValue by prefs.json<Person>(JSON, null, moshi)
     }
 
     @Mock lateinit var prefs: SharedPreferences
@@ -50,15 +62,21 @@ class PreferenceDelegateTest {
     }
 
     @Test
+    fun testIntRead() {
+        whenever(prefs.getInt(INT, 0)).thenReturn(13)
+        assertEquals(13, prefsContainer.intValue)
+    }
+
+    @Test
     fun testIntSave() {
         prefsContainer.intValue = 12
         verify(prefsEditor).putInt(INT, 12)
     }
 
     @Test
-    fun testIntRead() {
-        whenever(prefs.getInt(INT, 0)).thenReturn(13)
-        assertEquals(prefsContainer.intValue, 13)
+    fun testBooleanRead() {
+        whenever(prefs.getBoolean(BOOLEAN, false)).thenReturn(true)
+        assertEquals(true, prefsContainer.booleanValue)
     }
 
     @Test
@@ -68,9 +86,9 @@ class PreferenceDelegateTest {
     }
 
     @Test
-    fun testBooleanRead() {
-        whenever(prefs.getBoolean(BOOLEAN, false)).thenReturn(true)
-        assertEquals(prefsContainer.booleanValue, true)
+    fun testLongRead() {
+        whenever(prefs.getLong(LONG, 0)).thenReturn(18)
+        assertEquals(18, prefsContainer.longValue)
     }
 
     @Test
@@ -80,9 +98,9 @@ class PreferenceDelegateTest {
     }
 
     @Test
-    fun testLongRead() {
-        whenever(prefs.getLong(LONG, 0)).thenReturn(18)
-        assertEquals(prefsContainer.longValue, 18)
+    fun testFloatRead() {
+        whenever(prefs.getFloat(FLOAT, 0f)).thenReturn(18f)
+        assertEquals(18f, prefsContainer.floatValue)
     }
 
     @Test
@@ -92,9 +110,9 @@ class PreferenceDelegateTest {
     }
 
     @Test
-    fun testFloatRead() {
-        whenever(prefs.getFloat(FLOAT, 0f)).thenReturn(18f)
-        assertEquals(prefsContainer.floatValue, 18f)
+    fun testStringRead() {
+        whenever(prefs.getString(STRING, null)).thenReturn("ho")
+        assertEquals("ho", prefsContainer.stringValue)
     }
 
     @Test
@@ -104,9 +122,9 @@ class PreferenceDelegateTest {
     }
 
     @Test
-    fun testStringRead() {
-        whenever(prefs.getString(STRING, null)).thenReturn("ho")
-        assertEquals(prefsContainer.stringValue, "ho")
+    fun testStringSetRead() {
+        whenever(prefs.getStringSet(STRING_SET, null)).thenReturn(setOf("ho"))
+        assertEquals(setOf("ho"), prefsContainer.stringSetValue)
     }
 
     @Test
@@ -116,9 +134,30 @@ class PreferenceDelegateTest {
     }
 
     @Test
-    fun testStringSetRead() {
-        whenever(prefs.getStringSet(STRING_SET, null)).thenReturn(setOf("ho"))
-        assertEquals(prefsContainer.stringSetValue, setOf("ho"))
+    fun testEnumRead() {
+        whenever(prefs.getString(ENUM, SomeEnum.DEFAULT.name)).thenReturn("NICE")
+        assertEquals(SomeEnum.NICE, prefsContainer.enumValue)
     }
 
+    @Test
+    fun testEnumSave() {
+        prefsContainer.enumValue = SomeEnum.NICE
+        verify(prefsEditor).putString(ENUM, SomeEnum.NICE.name)
+    }
+
+    @Test
+    fun testJsonRead() {
+        val person = Person("Johny", 22)
+        val personJson = jsonAdapter.toJson(person)
+        whenever(prefs.getString(JSON, "")).thenReturn(personJson)
+        assertEquals(person, prefsContainer.jsonValue)
+    }
+
+    @Test
+    fun testJsonWrite() {
+        val person = Person("Johny", 22)
+        val personJson = jsonAdapter.toJson(person)
+        prefsContainer.jsonValue = person
+        verify(prefsEditor).putString(JSON, personJson)
+    }
 }

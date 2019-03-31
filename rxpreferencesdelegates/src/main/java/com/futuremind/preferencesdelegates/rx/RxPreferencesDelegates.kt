@@ -4,15 +4,16 @@ import android.content.SharedPreferences
 import io.reactivex.Observable
 import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.Subject
+import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
 inline fun <reified T> SharedPreferences.rxPrefsDelegate(
         prefsKey: String,
         defaultValue: T
-): ObservableProperty<Any, T> {
+): ReadWriteProperty<Any, Observable<T>> {
     val prefs = this
 
-    return object: ObservableProperty<Any, T> {
+    return object: ReadWriteProperty<Any, Observable<T>> {
         val subject: Subject<T> = BehaviorSubject.create()
 
         init {
@@ -38,18 +39,11 @@ inline fun <reified T> SharedPreferences.rxPrefsDelegate(
                 is Long -> prefs.edit().putLong(prefsKey, rawValue).apply()
                 is Float -> prefs.edit().putFloat(prefsKey, rawValue).apply()
                 is String -> prefs.edit().putString(prefsKey, rawValue).apply()
-                else -> throw IllegalAccessException()
+                else -> throw IllegalAccessException("Shared preferences don't support type ${T::class.java.simpleName}")
             }
             subject.onNext(rawValue)
         }
     }
-}
-
-interface ObservableProperty<in R, T> {
-
-    operator fun getValue(thisRef: R, property: KProperty<*>): Observable<T>
-
-    operator fun setValue(thisRef: R, property: KProperty<*>, value: Observable<T>)
 }
 
 fun <T> T.justIt(): Observable<T> = Observable.just(this)

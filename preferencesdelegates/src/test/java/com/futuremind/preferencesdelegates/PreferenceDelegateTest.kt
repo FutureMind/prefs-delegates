@@ -46,7 +46,6 @@ class PreferenceDelegateTest {
 
     @Mock lateinit var prefs: SharedPreferences
     @Mock lateinit var prefsEditor: SharedPreferences.Editor
-
     private lateinit var prefsContainer: PrefValuesContainer
 
     @Before

@@ -21,7 +21,7 @@ class RxPreferencesDelegatesTest {
     }
 
     class PrefsValuesContainer(prefs: SharedPreferences) {
-        var intValue: Observable<Int> by prefs.rxPrefsDelegate(INT, 0)
+        var intValue: Observable<Int> by prefs.observableInt(INT, 0)
     }
 
     @Mock private lateinit var prefs: SharedPreferences

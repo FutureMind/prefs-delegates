@@ -1,47 +1,56 @@
+@file:Suppress("PARAMETER_NAME_CHANGED_ON_OVERRIDE")
+
 package com.futuremind.preferencesdelegates.rx
 
 import android.content.SharedPreferences
+import android.content.SharedPreferences.Editor
 import io.reactivex.Observable
 import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.Subject
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
-inline fun <reified T> SharedPreferences.rxPrefsDelegate(
+fun SharedPreferences.observableBoolena(prefsKey: String, defaultValue: Boolean = false) =
+        rxPrefsDelegate(prefsKey, defaultValue, this::getBoolean, Editor::putBoolean)
+
+fun SharedPreferences.observableLong(prefsKey: String, defaultValue: Long = 0L) =
+        rxPrefsDelegate(prefsKey, defaultValue, this::getLong, Editor::putLong)
+
+fun SharedPreferences.observableInt(prefsKey: String, defaultValue: Int = 0) =
+        rxPrefsDelegate(prefsKey, defaultValue, this::getInt, Editor::putInt)
+
+fun SharedPreferences.observableFloat(prefsKey: String, defaultValue: Float = 0f) =
+        rxPrefsDelegate(prefsKey, defaultValue, this::getFloat, Editor::putFloat)
+
+fun SharedPreferences.observableString(prefsKey: String, defaultValue: String? = null) =
+        rxPrefsDelegate(prefsKey, defaultValue, this::getString, Editor::putString)
+
+fun SharedPreferences.observableStringSet(prefsKey: String, defaultValue: Set<String>? = null) =
+        rxPrefsDelegate(prefsKey, defaultValue, this::getStringSet, Editor::putStringSet)
+
+fun <T> SharedPreferences.rxPrefsDelegate(
         prefsKey: String,
-        defaultValue: T
+        defaultValue: T,
+        readFunc: (String, T) -> T,
+        writeFunc: Editor.(String, T) -> Editor
 ): ReadWriteProperty<Any, Observable<T>> {
     val prefs = this
 
     return object: ReadWriteProperty<Any, Observable<T>> {
-        val subject: Subject<T> = BehaviorSubject.create()
+        private val subject = BehaviorSubject.create<T>()
 
-        init {
-            subject.onNext(when(defaultValue) {
-                is Boolean -> prefs.getBoolean(prefsKey, defaultValue) as T
-                is Int -> prefs.getInt(prefsKey, defaultValue) as T
-                is Long -> prefs.getLong(prefsKey, defaultValue) as T
-                is Float -> prefs.getFloat(prefsKey, defaultValue) as T
-                is String -> prefs.getString(prefsKey, defaultValue) as T
-                else -> throw IllegalAccessException("Shared preferences don't support type ${T::class.java.simpleName}")
-            })
-        }
+        init { subject.onNext(readFunc(prefsKey, defaultValue)) }
 
-        override fun getValue(thisRef: Any, property: KProperty<*>): Observable<T> {
-            return subject
-        }
+        override fun getValue(thisRef: Any, property: KProperty<*>): Observable<T> =
+            subject
 
-        override fun setValue(thisRef: Any, property: KProperty<*>, value: Observable<T>) {
-            val rawValue = value.blockingFirst()
-            when(rawValue) {
-                is Boolean -> prefs.edit().putBoolean(prefsKey, rawValue).apply()
-                is Int -> prefs.edit().putInt(prefsKey, rawValue).apply()
-                is Long -> prefs.edit().putLong(prefsKey, rawValue).apply()
-                is Float -> prefs.edit().putFloat(prefsKey, rawValue).apply()
-                is String -> prefs.edit().putString(prefsKey, rawValue).apply()
-                else -> throw IllegalAccessException("Shared preferences don't support type ${T::class.java.simpleName}")
-            }
-            subject.onNext(rawValue)
+        override fun setValue(thisRef: Any, property: KProperty<*>, valueObservable: Observable<T>) {
+            valueObservable
+                .doOnNext { value ->
+                    prefs.edit().writeFunc(prefsKey, value)
+                    subject.onNext(value)
+                }
+                .subscribe()
         }
     }
 }

@@ -4,14 +4,12 @@ import android.content.SharedPreferences
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.whenever
-import io.reactivex.Observable
+import org.junit.Assert.assertEquals
+import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.junit.MockitoJUnitRunner
-
-import org.junit.Assert.*
-import org.junit.Before
 import org.mockito.Mock
+import org.mockito.junit.MockitoJUnitRunner
 
 @RunWith(MockitoJUnitRunner::class)
 class RxPreferencesDelegatesTest {
@@ -21,7 +19,8 @@ class RxPreferencesDelegatesTest {
     }
 
     class PrefsValuesContainer(prefs: SharedPreferences) {
-        var intValue: Observable<Int> by prefs.observableInt(INT, 0)
+        var intValue by prefs.observableInt(INT)
+        val intObservable get() = ::intValue.asObservable()
     }
 
     @Mock private lateinit var prefs: SharedPreferences
@@ -38,8 +37,8 @@ class RxPreferencesDelegatesTest {
     @Test
     fun `when save item then subscriber gets it`() {
         var result = 0
-        prefsContainer.intValue.subscribe { result = it }
-        prefsContainer.intValue = 21.justIt()
+        prefsContainer.intObservable.subscribe { result = it }
+        prefsContainer.intValue = 21
 
         assertEquals(21, result)
         verify(prefsEditor).putInt(INT, 21)
@@ -48,8 +47,8 @@ class RxPreferencesDelegatesTest {
     @Test
     fun `when subscribe after saving item then subscriber gets it`() {
         var result = 0
-        prefsContainer.intValue = 21.justIt()
-        prefsContainer.intValue.subscribe { result = it }
+        prefsContainer.intValue = 21
+        prefsContainer.intObservable.subscribe { result = it }
 
         assertEquals(21, result)
         verify(prefsEditor).putInt(INT, 21)
@@ -58,9 +57,9 @@ class RxPreferencesDelegatesTest {
     @Test
     fun `when save item twice then subscriber gets correct values`() {
         val results = mutableListOf<Int>()
-        prefsContainer.intValue = 21.justIt()
-        prefsContainer.intValue.subscribe { results += it }
-        prefsContainer.intValue = 58.justIt()
+        prefsContainer.intValue = 21
+        prefsContainer.intObservable.subscribe { results += it }
+        prefsContainer.intValue = 58
 
         assertEquals(21, results[0])
         assertEquals(58, results[1])
@@ -70,9 +69,9 @@ class RxPreferencesDelegatesTest {
     @Test
     fun `when subscribe before saving item twice then subscriber gets correct values including default`() {
         val results = mutableListOf<Int>()
-        prefsContainer.intValue.subscribe { results += it }
-        prefsContainer.intValue = 21.justIt()
-        prefsContainer.intValue = 58.justIt()
+        prefsContainer.intObservable.subscribe { results += it }
+        prefsContainer.intValue = 21
+        prefsContainer.intValue = 58
 
         assertEquals(0, results[0])
         assertEquals(21, results[1])

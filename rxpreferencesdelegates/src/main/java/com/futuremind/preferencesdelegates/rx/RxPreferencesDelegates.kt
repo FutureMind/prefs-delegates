@@ -6,9 +6,11 @@ import android.content.SharedPreferences
 import android.content.SharedPreferences.Editor
 import io.reactivex.Observable
 import io.reactivex.subjects.BehaviorSubject
-import io.reactivex.subjects.Subject
+import java.lang.ClassCastException
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
+import kotlin.reflect.KProperty0
+import kotlin.reflect.jvm.isAccessible
 
 fun SharedPreferences.observableBoolena(prefsKey: String, defaultValue: Boolean = false) =
         rxPrefsDelegate(prefsKey, defaultValue, this::getBoolean, Editor::putBoolean)
@@ -33,26 +35,54 @@ fun <T> SharedPreferences.rxPrefsDelegate(
         defaultValue: T,
         readFunc: (String, T) -> T,
         writeFunc: Editor.(String, T) -> Editor
-): ReadWriteProperty<Any, Observable<T>> {
+): RxProperty<Any, T> {
     val prefs = this
 
-    return object: ReadWriteProperty<Any, Observable<T>> {
+    return object: RxProperty<Any, T> {
         private val subject = BehaviorSubject.create<T>()
+        private var lastValue: T
 
-        init { subject.onNext(readFunc(prefsKey, defaultValue)) }
-
-        override fun getValue(thisRef: Any, property: KProperty<*>): Observable<T> =
-            subject
-
-        override fun setValue(thisRef: Any, property: KProperty<*>, valueObservable: Observable<T>) {
-            valueObservable
-                .doOnNext { value ->
-                    prefs.edit().writeFunc(prefsKey, value)
-                    subject.onNext(value)
-                }
-                .subscribe()
+        init {
+            lastValue = readFunc(prefsKey, defaultValue)
+            subject.onNext(lastValue)
         }
+
+        override fun getValue(thisRef: Any, property: KProperty<*>) =
+            readFunc(prefsKey, defaultValue)
+                .also {
+                    if (it != lastValue) {
+                        subject.onNext(it)
+                        lastValue = it
+                    }
+                }
+
+        override fun setValue(thisRef: Any, property: KProperty<*>, value: T) {
+            prefs.edit().writeFunc(prefsKey, value).apply()
+            subject.onNext(value)
+        }
+
+        override fun asObservable(): Observable<T> = subject
     }
 }
 
-fun <T> T.justIt(): Observable<T> = Observable.just(this)
+interface RxProperty<in R, T>: ReadWriteProperty<R, T> {
+    fun asObservable(): Observable<T>
+}
+
+@Suppress("UNCHECKED_CAST")
+fun <T> KProperty0<T>.asObservable(): Observable<T> {
+
+    fun notSupportingRx(): Nothing =
+            throw IllegalAccessException("property ${this.name} does not support Rx")
+
+    try {
+        val delegate = this
+                .apply { isAccessible = true }
+                .getDelegate() as? RxProperty<Any, T>
+
+        return delegate?.asObservable() ?: notSupportingRx()
+    }
+    catch (e: ClassCastException) {
+        notSupportingRx()
+    }
+}

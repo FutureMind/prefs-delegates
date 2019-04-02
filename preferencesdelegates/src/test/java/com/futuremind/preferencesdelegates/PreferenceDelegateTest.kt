@@ -5,13 +5,14 @@ import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.whenever
 import com.squareup.moshi.Moshi
+import io.reactivex.Observable
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.junit.MockitoJUnitRunner
-
+import kotlin.reflect.KProperty0
 
 @RunWith(MockitoJUnitRunner::class)
 class PreferenceDelegateTest {

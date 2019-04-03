@@ -135,7 +135,7 @@ class PreferenceDelegateTest {
 
     @Test
     fun testEnumRead() {
-        whenever(prefs.getString(ENUM, SomeEnum.DEFAULT.name)).thenReturn("NICE")
+        whenever(prefs.getString(ENUM, SomeEnum.DEFAULT.name)).thenReturn(SomeEnum.NICE.name)
         assertEquals(SomeEnum.NICE, prefsContainer.enumValue)
     }
 

@@ -35,47 +35,46 @@ class RxPreferencesDelegatesTest {
     }
 
     @Test
-    fun `when save item then subscriber gets it`() {
-        var result = 0
-        prefsContainer.intObservable.subscribe { result = it }
+    fun `when save item than SharedPreferences is updated`() {
         prefsContainer.intValue = 21
-
-        assertEquals(21, result)
         verify(prefsEditor).putInt(INT, 21)
     }
 
     @Test
-    fun `when subscribe after saving item then subscriber gets it`() {
-        var result = 0
+    fun `when subscribe before saving item then subscriber gets default and saved item`() {
+        val testSubscriber = prefsContainer.intObservable.test()
         prefsContainer.intValue = 21
-        prefsContainer.intObservable.subscribe { result = it }
-
-        assertEquals(21, result)
-        verify(prefsEditor).putInt(INT, 21)
+        testSubscriber.assertValues(0, 21)
     }
 
     @Test
-    fun `when save item twice then subscriber gets correct values`() {
-        val results = mutableListOf<Int>()
+    fun `when subscribe after saving item then subscriber gets only saved item`() {
         prefsContainer.intValue = 21
-        prefsContainer.intObservable.subscribe { results += it }
-        prefsContainer.intValue = 58
-
-        assertEquals(21, results[0])
-        assertEquals(58, results[1])
-        verify(prefsEditor).putInt(INT, 21)
+        val testSubscriber = prefsContainer.intObservable.test()
+        testSubscriber.assertValues(21)
     }
 
     @Test
-    fun `when subscribe before saving item twice then subscriber gets correct values including default`() {
-        val results = mutableListOf<Int>()
-        prefsContainer.intObservable.subscribe { results += it }
+    fun `when subscribe before saving item twice then subscriber gets saved values including default`() {
+        val testSubscriber = prefsContainer.intObservable.test()
         prefsContainer.intValue = 21
         prefsContainer.intValue = 58
+        testSubscriber.assertValues(0, 21, 58)
+    }
 
-        assertEquals(0, results[0])
-        assertEquals(21, results[1])
-        assertEquals(58, results[2])
-        verify(prefsEditor).putInt(INT, 21)
+    @Test
+    fun `when subscribe in between saving item twice then subscriber gets saved values`() {
+        prefsContainer.intValue = 21
+        val testSubscriber = prefsContainer.intObservable.test()
+        prefsContainer.intValue = 58
+        testSubscriber.assertValues(21, 58)
+    }
+
+    @Test
+    fun `when subscribe after saving item twice then subscriber gets only latest value`() {
+        prefsContainer.intValue = 21
+        prefsContainer.intValue = 58
+        val testSubscriber = prefsContainer.intObservable.test()
+        testSubscriber.assertValues(58)
     }
 }

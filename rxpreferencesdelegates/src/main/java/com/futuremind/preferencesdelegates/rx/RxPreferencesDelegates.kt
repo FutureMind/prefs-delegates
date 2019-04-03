@@ -12,7 +12,7 @@ import kotlin.reflect.KProperty
 import kotlin.reflect.KProperty0
 import kotlin.reflect.jvm.isAccessible
 
-fun SharedPreferences.observableBoolena(prefsKey: String, defaultValue: Boolean = false) =
+fun SharedPreferences.observableBoolean(prefsKey: String, defaultValue: Boolean = false) =
         rxPrefsDelegate(prefsKey, defaultValue, this::getBoolean, Editor::putBoolean)
 
 fun SharedPreferences.observableLong(prefsKey: String, defaultValue: Long = 0L) =

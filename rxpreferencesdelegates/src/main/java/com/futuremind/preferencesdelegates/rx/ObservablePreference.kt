@@ -54,7 +54,9 @@ fun SharedPreferences.observableStringSet(prefsKey: String, defaultValue: Set<St
 
 
 /**
- * Class representing observable shared preference
+ * Class representing observable shared preference.
+ * NOTE: When using this class, do not change the underlying preference from outside world,
+ * because the changes you made won't be noticed by the observers.
  * @param prefs the [SharedPreferences] to associate the preference with
  * @param prefsKey the key preference to be referred with in [SharedPreferences]
  * @param defaultValue the value to be provided if key is not present in [SharedPreferences]
@@ -72,7 +74,7 @@ class ObservablePreference<T: Any>(
     private val observable = Observable.create<T> {
         emitter = it
         emitter?.onNext(prefs.readFunc(prefsKey, defaultValue))
-    }.distinctUntilChanged().replay(1).refCount()
+    }.distinctUntilChanged().replay(1).autoConnect()
 
     /**
      * Get the [Observable] which will notify subscribers about each modification of the preference.
@@ -94,5 +96,4 @@ class ObservablePreference<T: Any>(
         prefs.edit().writeFunc(prefsKey, value).apply()
         emitter?.onNext(value)
     }
-
 }

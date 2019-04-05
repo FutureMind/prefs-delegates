@@ -4,10 +4,6 @@ import android.content.SharedPreferences
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.whenever
-import io.reactivex.Observable
-import io.reactivex.ObservableEmitter
-import io.reactivex.subjects.BehaviorSubject
-import io.reactivex.subjects.PublishSubject
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -15,7 +11,7 @@ import org.mockito.Spy
 import org.mockito.junit.MockitoJUnitRunner
 
 @RunWith(MockitoJUnitRunner::class)
-class RxPreferencesDelegatesTest {
+class ObservablePreferenceTest {
 
     companion object {
         private const val BOOLEAN = "BOOLEAN"
@@ -157,5 +153,17 @@ class RxPreferencesDelegatesTest {
 
         testSubscriber.assertValues(21, 58)
         testSubscriber2.assertValues(58)
+    }
+
+    @Test
+    fun `when subscribe dispose and subscribe again then subscriber still gets last and subsequent values`() {
+        prefsContainer.intPref.save(21)
+        val testSubscriber1 = prefsContainer.intPref.observable().test()
+        testSubscriber1.dispose()
+
+        val testSubscriber2 = prefsContainer.intPref.observable().test()
+        prefsContainer.intPref.save(58)
+
+        testSubscriber2.assertValues(21, 58)
     }
 }

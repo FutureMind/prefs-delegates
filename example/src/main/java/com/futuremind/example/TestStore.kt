@@ -23,7 +23,7 @@ class TestStore @Inject constructor(prefs: SharedPreferences, moshi: Moshi) {
 
     var enum: SomeEnum by prefs.enum<SomeEnum>(ENUM_KEY, SomeEnum.AWESOME)
 
-    var person: Person? by prefs.json<Person?>(PERSON_KEY, null, moshi)
+    var person: Person? by prefs.json<Person?>(PERSON_KEY, moshi)
 
     var token = PreferencesObserver(TOKEN_KEY, prefs, String::class.java, "")
 

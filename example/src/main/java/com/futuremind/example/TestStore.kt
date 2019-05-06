@@ -1,10 +1,10 @@
 package com.futuremind.example
 
 import android.content.SharedPreferences
-import com.futuremind.preferencesdelegates.PreferencesObserver
 import com.futuremind.preferencesdelegates.enum
 import com.futuremind.preferencesdelegates.int
 import com.futuremind.preferencesdelegates.json
+import com.futuremind.preferencesdelegates.rx.observableString
 import com.squareup.moshi.Moshi
 import javax.inject.Inject
 
@@ -25,6 +25,6 @@ class TestStore @Inject constructor(prefs: SharedPreferences, moshi: Moshi) {
 
     var person: Person? by prefs.json<Person?>(PERSON_KEY, null, moshi)
 
-    var token = PreferencesObserver(TOKEN_KEY, prefs, String::class.java, "")
+    var token = prefs.observableString(TOKEN_KEY, "")
 
 }

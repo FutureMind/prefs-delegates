@@ -1,7 +1,6 @@
 package com.futuremind.example
 
 import android.arch.lifecycle.ViewModel
-import com.squareup.moshi.Moshi
 import io.reactivex.Observable
 import javax.inject.Inject
 
@@ -12,7 +11,7 @@ class MainViewModel @Inject constructor(private val testStore: TestStore) : View
     }
 
     fun saveToken(token: String) {
-        testStore.token.saveValue(token).subscribe()
+        testStore.token.save(token)
     }
 
     fun saveEnum(enum: TestStore.SomeEnum) {
@@ -27,5 +26,5 @@ class MainViewModel @Inject constructor(private val testStore: TestStore) : View
 
     fun getPerson(): Person? = testStore.person
 
-    fun observeTokenChange(): Observable<String> = testStore.token.observe()
+    fun observeTokenChange(): Observable<String> = testStore.token.observable()
 }

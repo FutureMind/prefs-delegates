@@ -39,7 +39,7 @@ class ObservablePreferenceTest {
         val stringPref = prefs.observableString(STRING)
         val stringSetPref = prefs.observableStringSet(STRING_SET)
         var enumPref = prefs.observableEnum<SomeEnum>(ENUM, SomeEnum.DEFAULT)
-        var jsonPref = prefs.json<Person>(JSON, null, moshi)
+        var jsonPref = prefs.observableJson<Person>(JSON, null, moshi)
     }
 
     private val intMap = mutableMapOf<String, Int>()

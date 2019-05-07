@@ -4,6 +4,7 @@ import android.content.SharedPreferences
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.whenever
+import com.squareup.moshi.Moshi
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -20,7 +21,15 @@ class ObservablePreferenceTest {
         private const val FLOAT = "FLOAT"
         private const val STRING = "STRING"
         private const val STRING_SET = "STRING_SET"
+        private const val ENUM = "ENUM"
+        private const val JSON = "JSON"
+        private val moshi = Moshi.Builder().build()
+        private val jsonAdapter = moshi.adapter(Person::class.java)
     }
+
+    enum class SomeEnum { DEFAULT, NICE, CRAP }
+
+    data class Person(val name: String, val age: Int)
 
     class PrefsValuesContainer(prefs: SharedPreferences) {
         val booleanPref = prefs.observableBoolean(BOOLEAN)
@@ -29,6 +38,8 @@ class ObservablePreferenceTest {
         val floatPref = prefs.observableFloat(FLOAT)
         val stringPref = prefs.observableString(STRING)
         val stringSetPref = prefs.observableStringSet(STRING_SET)
+        var enumPref = prefs.observableEnum<SomeEnum>(ENUM, SomeEnum.DEFAULT)
+        var jsonPref = prefs.json<Person>(JSON, null, moshi)
     }
 
     private val intMap = mutableMapOf<String, Int>()
@@ -93,6 +104,20 @@ class ObservablePreferenceTest {
     fun `when save String Set then SharedPreferences is updated`() {
         prefsContainer.stringSetPref.save(setOf("hey", "ho"))
         verify(prefsEditor).putStringSet(STRING_SET, setOf("hey", "ho"))
+    }
+
+    @Test
+    fun `when save Enum then SharedPreferences is updated`() {
+        prefsContainer.enumPref.save(SomeEnum.NICE)
+        verify(prefsEditor).putString(ENUM, SomeEnum.NICE.name)
+    }
+
+    @Test
+    fun `when save json then SharedPreferences is updated`() {
+        val person = Person("Johny", 22)
+        val personJson = jsonAdapter.toJson(person)
+        prefsContainer.jsonPref.save(person)
+        verify(prefsEditor).putString(JSON, personJson)
     }
 
     @Test

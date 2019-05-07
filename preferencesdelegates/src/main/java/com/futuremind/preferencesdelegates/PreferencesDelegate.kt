@@ -64,7 +64,6 @@ fun SharedPreferences.long(prefsKey: String) =
  * @param defaultValue the value to be provided to property if key is not present in [SharedPreferences]
  * @return value of the preference or [defaultValue] if given key is not present
  */
-
 fun SharedPreferences.int(prefsKey: String, defaultValue: Int) =
         prefsDelegate(prefsKey, defaultValue, SharedPreferences::getInt, SharedPreferences.Editor::putInt)
 
@@ -184,7 +183,7 @@ inline fun <reified E : Enum<E>> SharedPreferences.enum(prefsKey: String, defaul
  * @param moshi the [Moshi] library object for JSON parsing
  * @return value of the preference or defaultValue if given key is not present
  */
-inline fun <reified T: Any?> SharedPreferences.json(prefsKey: String, moshi: Moshi, defaultValue: T): ReadWriteProperty<Any, T> {
+inline fun <reified T> SharedPreferences.json(prefsKey: String, moshi: Moshi, defaultValue: T): ReadWriteProperty<Any, T> {
     val jsonAdapter = moshi.adapter(T::class.java)
     val defaultJson = if (defaultValue != null) jsonAdapter.toJson(defaultValue) else ""
     return prefsDelegate(
@@ -213,11 +212,12 @@ inline fun <reified T: Any?> SharedPreferences.json(prefsKey: String, moshi: Mos
 inline fun <reified T: Any?> SharedPreferences.json(prefsKey: String, moshi: Moshi) =
         json<T?>(prefsKey, moshi, null)
 
+
 @PublishedApi internal fun <T> SharedPreferences.prefsDelegate(
         prefsKey: String,
         defaultValue: T,
-        readFunc: SharedPreferences.(String, T) -> T,
-        writeFunc: SharedPreferences.Editor.(String, T) -> Editor
+        readFunc: SharedPreferences.(key: String, default: T) -> T,
+        writeFunc: SharedPreferences.Editor.(key: String, default: T) -> Editor
 ): ReadWriteProperty<Any, T> {
     val prefs = this
     return object : ReadWriteProperty<Any, T> {

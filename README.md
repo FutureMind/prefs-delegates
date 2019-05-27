@@ -79,6 +79,10 @@ Add the dependency with current JitPack version: [![](https://jitpack.io/v/Futur
 
 ```groovy
 dependencies {
-    implementation 'com.github.FutureMind:prefs-delegates:0.9'
+    implementation 'com.github.FutureMind:prefs-delegates:0.9.1'
+    
+    // or if you need only one of the library modules:
+    implementation 'com.github.FutureMind.prefs-delegates:preferencesdelegates:0.9.1'
+    implementation 'com.github.FutureMind.prefs-delegates:rxpreferencesdelegates:0.9.1'
 }
 ```

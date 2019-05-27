@@ -1,3 +1,5 @@
+[![](https://jitpack.io/v/FutureMind/prefs-delegates.svg)](https://jitpack.io/#FutureMind/prefs-delegates)
+
 # Prefs delegates
 One more Kotlin library for better usage of Android `SharedPreferences` with optionally reactive streams. 
 
@@ -73,7 +75,7 @@ allprojects {
 }
 ```
 
-Add the dependency:
+Add the dependency with current JitPack version: [![](https://jitpack.io/v/FutureMind/prefs-delegates.svg)](https://jitpack.io/#FutureMind/prefs-delegates)
 
 ```groovy
 dependencies {

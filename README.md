@@ -77,6 +77,6 @@ Add the dependency:
 
 ```groovy
 dependencies {
-    implementation 'com.github.FutureMind:prefs-delegates:1.0'
+    implementation 'com.github.FutureMind:prefs-delegates:0.9'
 }
 ```

@@ -3,6 +3,7 @@ package com.futuremind.example
 import android.arch.lifecycle.ViewModelProvider
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import com.facebook.stetho.Stetho
 import com.futuremind.daggerutils.Injectable
@@ -27,5 +28,9 @@ class MainActivity : AppCompatActivity(), Injectable {
         super.onStart()
         viewModel.saveToken("test_token")
         viewModel.saveAge(26)
+        viewModel.saveEnum(TestStore.SomeEnum.NICE)
+        viewModel.savePerson(Person("Johny", 22))
+        Log.d("test", viewModel.getEnum().toString())
+        Log.d("test", viewModel.getPerson().toString())
     }
 }

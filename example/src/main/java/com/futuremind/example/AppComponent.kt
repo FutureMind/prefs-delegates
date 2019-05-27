@@ -12,6 +12,7 @@ import javax.inject.Singleton
             ViewModelFactoryModule::class,
             ContextModule::class,
             SharedPrefsModule::class,
+            JsonModule::class,
             MainActivityBuilder::class
         ]
 )

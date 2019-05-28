@@ -73,7 +73,7 @@ inline fun <reified E : Enum<E>> SharedPreferences.observableEnum(prefsKey: Stri
  * @param defaultValue the value to be provided to property if key is not present in [SharedPreferences]
  * @param moshi the [Moshi] library object for JSON parsing
  */
-inline fun <reified T> SharedPreferences.json(prefsKey: String, defaultValue: T?, moshi: Moshi): ObservablePreference<T?> {
+inline fun <reified T> SharedPreferences.observableJson(prefsKey: String, defaultValue: T?, moshi: Moshi): ObservablePreference<T?> {
     val jsonAdapter = moshi.adapter(T::class.java)
     val defaultJson = if (defaultValue != null) jsonAdapter.toJson(defaultValue) else ""
     return ObservablePreference(

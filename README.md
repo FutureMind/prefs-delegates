@@ -5,30 +5,23 @@ One more Kotlin library for better usage of Android `SharedPreferences` with opt
 
 ## Usage:
 
-First define your store class:
+First declare your store class:
 
 ```kotlin
 class TestStore(prefs: SharedPreferences, moshi: Moshi) {
-
-    companion object {
-        private const val PREF_BOOLEAN = "PREF_BOOLEAN"
-        private const val PREF_ENUM = "PREF_ENUM"
-        private const val PREF_JSON = "PREF_JSON"
-        private const val PREF_OBSERVABLE_INT = "PREF_OBSERVABLE_INT"
-    }
 
     enum class SomeEnum { DEFAULT, NICE }
 
     data class Person(val name: String, val age: Int)
 
-    var booleanPref: Boolean by prefs.boolean(PREF_BOOLEAN)
-    var enumPref: SomeEnum by prefs.enum(PREF_ENUM, SomeEnum.DEFAULT)
-    var jsonPref: Person by prefs.json(PREF_JSON, moshi, Person("stranger", 23))
-    val intObservablePref = prefs.observableInt(PREF_OBSERVABLE_INT)
+    var booleanPref: Boolean by prefs.boolean("prefBoolean")
+    var enumPref: SomeEnum by prefs.enum("prefEnum", SomeEnum.DEFAULT)
+    var jsonPref: Person by prefs.json("prefJson", moshi, Person("stranger", 23))
+    val intObservablePref = prefs.observableInt("prefObservableInt")
 }
 ```
 
-And then you can use it that way:
+And then you can use it in that way:
 
 ```kotlin
 val store = TestStore(prefs, moshi)
@@ -38,7 +31,7 @@ if (store.booleanPref) { /* do something */ }
 store.jsonPref = Person("nice guy", 24)
 
 store.intObservablePref.observer().subscribe {
-    // new int received
+    // do something with new int value
 }
 val currentObservableValue = store.intObservablePref.get()
 store.intObservablePref.save(25)

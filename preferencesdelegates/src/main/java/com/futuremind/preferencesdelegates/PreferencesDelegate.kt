@@ -205,7 +205,6 @@ inline fun <reified T : Enum<*>?> SharedPreferences.enum(prefsKey: String, defau
                 { key ->
                     val enumName = getString(key, null)
                     T::class.java.enumConstants.firstOrNull { it!!.name == enumName }
-                            ?: defaultValue
                 },
                 { key, value -> putString(key, value.name) }
         )
@@ -242,7 +241,7 @@ inline fun <reified T : Any?> SharedPreferences.json(prefsKey: String, moshi: Mo
                 try {
                     jsonAdapter.fromJson(getString(key, null)!!)
                 } catch (e: Exception) {
-                    defaultValue
+                    null
                 }
             },
             { key, value -> putString(key, jsonAdapter.toJson(value as T)) }

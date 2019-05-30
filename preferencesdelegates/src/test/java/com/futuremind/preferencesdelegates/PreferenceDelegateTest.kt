@@ -5,6 +5,7 @@ import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.whenever
 import com.squareup.moshi.Moshi
+import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
@@ -40,13 +41,15 @@ class PreferenceDelegateTest {
         private const val JSON = "JSON"
         private const val JSON_NULLABLE = "JSON_NULLABLE"
 
-        private val moshi = Moshi.Builder().build()
+        private val moshi = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
         private val jsonAdapter = moshi.adapter(Person::class.java)
+        private val jsonOldFormatAdapter = moshi.adapter(PersonOldFormat::class.java)
     }
 
     enum class SomeEnum { DEFAULT, NICE, CRAP }
 
     data class Person(val name: String, val age: Int)
+    data class PersonOldFormat(val oldNameFormat: String)
 
     class PrefValuesContainer(prefs: SharedPreferences) {
         var booleanValueImplicit by prefs.boolean(BOOLEAN_IMPLICIT, false)
@@ -453,6 +456,13 @@ class PreferenceDelegateTest {
     }
 
     @Test
+    fun enumReadFallback() {
+        whenever(prefs.contains(ENUM)).thenReturn(true)
+        whenever(prefs.getString(ENUM, null)).thenReturn("NOT_EXISTED")
+        assertEquals(SomeEnum.DEFAULT, prefsContainer.enumValue)
+    }
+
+    @Test
     fun enumSave() {
         prefsContainer.enumValue = SomeEnum.CRAP
         verify(prefsEditor).putString(ENUM, SomeEnum.CRAP.name)
@@ -469,6 +479,13 @@ class PreferenceDelegateTest {
         whenever(prefs.contains(ENUM_NULLABLE)).thenReturn(true)
         whenever(prefs.getString(ENUM_NULLABLE, null)).thenReturn(SomeEnum.NICE.name)
         assertEquals(SomeEnum.NICE, prefsContainer.enumValueNullable)
+    }
+
+    @Test
+    fun enumNullableReadFallback() {
+        whenever(prefs.contains(ENUM_NULLABLE)).thenReturn(true)
+        whenever(prefs.getString(ENUM_NULLABLE, null)).thenReturn("NOT_EXISTED")
+        assertNull(prefsContainer.enumValueNullable)
     }
 
     @Test
@@ -501,6 +518,16 @@ class PreferenceDelegateTest {
     }
 
     @Test
+    fun jsonReadFallback() {
+        val default = Person("a", 1)
+        val personOldFormat = PersonOldFormat("b")
+        val personOldFormatJson = jsonOldFormatAdapter.toJson(personOldFormat)
+        whenever(prefs.contains(JSON)).thenReturn(true)
+        whenever(prefs.getString(JSON, null)).thenReturn(personOldFormatJson)
+        assertEquals(default, prefsContainer.jsonValue)
+    }
+
+    @Test
     fun jsonSave() {
         val person = Person("c", 3)
         val personJson = jsonAdapter.toJson(person)
@@ -521,6 +548,15 @@ class PreferenceDelegateTest {
         whenever(prefs.contains(JSON_NULLABLE)).thenReturn(true)
         whenever(prefs.getString(JSON_NULLABLE, null)).thenReturn(personJson)
         assertEquals(person, prefsContainer.jsonValueNullable)
+    }
+
+    @Test
+    fun jsonNullableReadFallback() {
+        val personOldFormat = PersonOldFormat("b")
+        val personOldFormatJson = jsonOldFormatAdapter.toJson(personOldFormat)
+        whenever(prefs.contains(JSON_NULLABLE)).thenReturn(true)
+        whenever(prefs.getString(JSON_NULLABLE, null)).thenReturn(personOldFormatJson)
+        assertNull(prefsContainer.jsonValueNullable)
     }
 
     @Test

@@ -406,7 +406,7 @@ class PreferenceDelegateTest {
     @Test
     fun stringSetRead() {
         whenever(prefs.contains(STRING_SET)).thenReturn(true)
-        whenever(prefs.getStringSet(STRING_SET, emptySet())).thenReturn(setOf("a", "b"))
+        whenever(prefs.getStringSet(STRING_SET, null)).thenReturn(setOf("a", "b"))
         assertEquals(setOf("a", "b"), prefsContainer.stringSetValue)
     }
 
@@ -425,7 +425,7 @@ class PreferenceDelegateTest {
     @Test
     fun stringSetNullableRead() {
         whenever(prefs.contains(STRING_SET_NULLABLE)).thenReturn(true)
-        whenever(prefs.getStringSet(STRING_SET_NULLABLE, emptySet())).thenReturn(setOf("a", "b"))
+        whenever(prefs.getStringSet(STRING_SET_NULLABLE, null)).thenReturn(setOf("a", "b"))
         assertEquals(setOf("a", "b"), prefsContainer.stringSetValueNullable)
     }
 

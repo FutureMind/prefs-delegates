@@ -145,7 +145,7 @@ inline fun <reified T : String?> SharedPreferences.string(prefsKey: String, defa
         prefsDelegate<String, T>(
                 prefsKey,
                 defaultValue,
-                { getString(it, null) ?: "" },
+                { getString(it, null) },
                 SharedPreferences.Editor::putString
         )
 
@@ -174,7 +174,7 @@ inline fun <reified T : Set<String>?> SharedPreferences.stringSet(prefsKey: Stri
         prefsDelegate<Set<String>, T>(
                 prefsKey,
                 defaultValue,
-                { getStringSet(it, emptySet()) ?: emptySet() },
+                { getStringSet(it, null) },
                 SharedPreferences.Editor::putStringSet
         )
 

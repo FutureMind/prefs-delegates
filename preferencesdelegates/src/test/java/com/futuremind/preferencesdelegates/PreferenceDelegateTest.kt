@@ -49,7 +49,7 @@ class PreferenceDelegateTest {
     enum class SomeEnum { DEFAULT, NICE, CRAP }
 
     data class Person(val name: String, val age: Int)
-    data class PersonOldFormat(val oldNameFormat: String)
+    data class PersonOldFormat(val name: String)
 
     class PrefValuesContainer(prefs: SharedPreferences) {
         var booleanValueImplicit by prefs.boolean(BOOLEAN_IMPLICIT, false)

@@ -6,7 +6,7 @@ One more Kotlin library for better usage of Android `SharedPreferences` with opt
 ## Usage:
 ### `Shared Preferences` delegates
 All `Shared Preferences` delegates has possibility to declare a nullable and non nullable delegates:
-```kolin
+```kotlin
 var booleanImplicit by prefs.boolean("key1", false)
 var booleanExplicit: Boolean by prefs.boolean("key2", false)
 var booleanNullableImplicit by prefs.boolean("key3")

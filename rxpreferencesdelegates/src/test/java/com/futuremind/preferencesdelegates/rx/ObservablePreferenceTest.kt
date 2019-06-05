@@ -5,6 +5,7 @@ import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.whenever
 import com.squareup.moshi.Moshi
+import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -23,7 +24,8 @@ class ObservablePreferenceTest {
         private const val STRING_SET = "STRING_SET"
         private const val ENUM = "ENUM"
         private const val JSON = "JSON"
-        private val moshi = Moshi.Builder().build()
+
+        private val moshi = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
         private val jsonAdapter = moshi.adapter(Person::class.java)
     }
 

@@ -18,11 +18,11 @@ Yet one more library leveraging kotlin magic for elegant shared prefs handling. 
 You can use the delegates directly like you would use a regular variable:
 
 ```kotlin
-var myFlag by prefs.boolean("my_flag", false)
+var someFlag by prefs.boolean("some_flag", false)
 
-textView.text = "My flag is currently: $myFlag" //loaded from shared preferences
+textView.text = "The flag is currently: $someFlag" //loaded from shared preferences
 
-myFlag = true //saved to shared preferences
+someFlag = true //saved to shared preferences
 ```
 
 **The magic part is that every time you read or write the variable, it's loaded from shared prefs or saved to them.**
@@ -40,15 +40,15 @@ var booleanNullableExplicitDefault: Boolean? by prefs.boolean("key5", false)
 ### Observable
 
 ```kotlin
-val myObservableInt = prefs.observableInt("my_observable_int")
+val someObservableInt = prefs.observableInt("some_observable_int")
 
-myObservableInt.observable().subscribe {
+someObservableInt.observable().subscribe {
     //will return the current value from shared prefs upon subscription
     //and then while it's subscribed, every value subsequently written to it.
 }
 
 //for the observable to work you need to save via the same instance
-myObservableInt.save(21)
+someObservableInt.save(21)
 ```
 
 ## Supported classes

@@ -19,6 +19,10 @@ You can use the delegates directly like you would use a regular variable:
 
 ```kotlin
 var myFlag by prefs.boolean("my_flag", false)
+
+textView.text = "My flag is currently: $myFlag" //loaded from shared preferences
+
+myFlag = true //saved to shared preferences
 ```
 
 **The magic part is that every time you read or write the variable, it's loaded from shared prefs or saved to them.**

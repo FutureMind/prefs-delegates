@@ -1,11 +1,30 @@
 [![](https://jitpack.io/v/FutureMind/prefs-delegates.svg)](https://jitpack.io/#FutureMind/prefs-delegates)
 
 # Prefs delegates
-One more Kotlin library for better usage of Android `SharedPreferences` with optionally reactive streams. 
+Yet one more library leveraging kotlin magic for elegant shared prefs handling. With some extra rx sugar on top.
 
-## Usage:
-### `Shared Preferences` delegates
-All `Shared Preferences` delegates has possibility to declare a nullable and non nullable delegates:
+## Features
+
+- Handles all primitive types that Shared Preferences do.
+- ...but adds hassle-free `enum` serialization.
+- ...and any arbitrary `Serializable` structure via `moshi` json serializer.
+- Takes care of proper handling of nullable and default values.
+- Provides `RxJava` observability.
+
+## Usage
+
+### Basic usage
+
+You can use the delegates directly like you would use a regular variable:
+
+```kotlin
+var myFlag by prefs.boolean("my_flag", false)
+```
+
+**The magic part is that every time you read or write the variable, it's loaded from shared prefs or saved to them.**
+
+### Nullability and default values
+
 ```kotlin
 var booleanImplicit by prefs.boolean("key1", false)
 var booleanExplicit: Boolean by prefs.boolean("key2", false)
@@ -14,49 +33,21 @@ var booleanNullableExplicit: Boolean? by prefs.boolean("key4")
 var booleanNullableExplicitDefault: Boolean? by prefs.boolean("key5", false)
 ```
 
-### `Observable`
-All extension functions for `ObservablePreference<T>`
-has `defaultValue: T` argument so you can also use your own default value, eg.
+### Observable
 
 ```kotlin
-var stringPref by prefs.string("key", "Custom default value")
-```
+val myObservableInt = prefs.observableInt("my_observable_int")
 
-### Example
-
-First declare your store class:
-
-```kotlin
-class TestStore(prefs: SharedPreferences, moshi: Moshi) {
-
-    enum class SomeEnum { DEFAULT, NICE }
-
-    data class Person(val name: String, val age: Int)
-
-    var booleanPref: Boolean by prefs.boolean("prefBoolean", false)
-    var enumPref: SomeEnum by prefs.enum("prefEnum", SomeEnum.DEFAULT)
-    var jsonPref: Person? by prefs.json("prefJson", moshi)
-    val intObservablePref = prefs.observableInt("prefObservableInt")
+myObservableInt.observable().subscribe {
+    //will return the current value from shared prefs upon subscription
+    //and then while it's subscribed, every value subsequently written to it.
 }
+
+//for the observable to work you need to save via the same instance
+myObservableInt.save(21)
 ```
 
-And then you can use it in that way:
-
-```kotlin
-val store = TestStore(prefs, moshi)
-
-val currentEnumValue = store.enumPref
-if (store.booleanPref) { /* do something */ }
-store.jsonPref = Person("nice guy", 24)
-
-store.intObservablePref.observer().subscribe {
-    // do something with new int value
-}
-val currentObservableValue = store.intObservablePref.get()
-store.intObservablePref.save(25)
-```
-
-## Supported classes:
+## Supported classes
 
 * `Boolean`
 * `Int`
@@ -65,10 +56,10 @@ store.intObservablePref.save(25)
 * `Double`
 * `String`
 * `StringSet`
-* `Enum`
-* and other classes that can be serialized to json 
+* `Enum` (saved as a string name of the enum)
+* and other classes that can be serialized to json via `moshi`
 
-## Installation:
+## Installation
 
 Add it in your root build.gradle at the end of repositories:
 

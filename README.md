@@ -63,6 +63,10 @@ someObservableInt.save(21)
 * `Enum` (saved as a string name of the enum)
 * and other classes that can be serialized to json via `moshi`
 
+
+**NOTE** Prefer [moshi-codegen](https://github.com/square/moshi#codegen) for json serialization. Reflection is much slower and deserializing large structures upon app startup may slow it down significantly. 
+
+
 ## Installation
 
 Add it in your root build.gradle at the end of repositories:
